@@ -12,24 +12,31 @@ class ChessTestCase(TestCase):
     def test_knight(self):
         response = get_potential_moves('knight', 'd2')
         response = [each.strip() for each in response.split(',')]
+        possible_moves = ['b1', 'f1', 'b3', 'f3', 'c4', 'e4']
 
-        for each in ['b1', 'f1', 'b3', 'f3', 'c4', 'e4']:
+        self.assertEqual(len(response), len(possible_moves))
+        
+        for each in possible_moves:
             self.assertTrue(each in response)
                 
     def test_rook(self):
         response = get_potential_moves('rook', 'd5')
         response = [each.strip() for each in response.split(',')]
+        possible_moves = ['a5', 'b5', 'c5', 'e5', 'f5', 'g5', 'h5',
+                          'd1', 'd2', 'd3', 'd4', 'd6', 'd7', 'd8']
 
-        for each in ['a5', 'b5', 'c5', 'e5', 'f5', 'g5', 'h5',
-                     'd1', 'd2', 'd3', 'd4', 'd6', 'd7', 'd8']:
+        self.assertEqual(len(response), len(possible_moves))
+        
+        for each in possible_moves:
             self.assertTrue(each in response)
 
     def test_queen(self):
         response = get_potential_moves('queen', 'd4')
         response = [each.strip() for each in response.split(',')]
-        
-        for each in ['a4', 'b4', 'c4', 'e4', 'f4', 'g4', 'h4',
-                     'd1', 'd2', 'd3', 'd5', 'd6', 'd7', 'd8',
-                     'a7', 'b6', 'c5', 'e3', 'f2', 'g1',
-                     'a1', 'b2', 'c3', 'e5', 'f6', 'g7', 'h8']:
+        possible_moves = ['a4', 'b4', 'c4', 'e4', 'f4', 'g4', 'h4',
+                          'd1', 'd2', 'd3', 'd5', 'd6', 'd7', 'd8',
+                          'a7', 'b6', 'c5', 'e3', 'f2', 'g1',
+                          'a1', 'b2', 'c3', 'e5', 'f6', 'g7', 'h8']
+
+        for each in possible_moves:
             self.assertTrue(each in response)
