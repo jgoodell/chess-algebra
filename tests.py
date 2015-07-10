@@ -11,5 +11,8 @@ class ChessTestCase(TestCase):
 
     def test_knight(self):
         response = get_potential_moves('knight', 'd2')
-        self.assertEqual(response,
-                         'b1, f1, b3, f3, c4, e4')
+        response = [each.strip() for each in response.split(',')]
+
+        for each in ['b1', 'f1', 'b3', 'f3', 'c4', 'e4']:
+            self.assertTrue(each in response)
+                
