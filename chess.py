@@ -11,31 +11,29 @@ ROOK_UNIT_VECTORS = ((1,0,),(1,1,),(-1,0,),(-1,-1,),)
 ROOK_RANGE = 8
 
 
-def find_knight_moves(x_axis, y_axis):
-    #import pdb; pdb.set_trace()
-    move_multiplier = 1
+def calculate_moves(x_axis, y_axis, unit_vectors, piece_range):
+    '''Uses vector algebra to calculate the move options based
+    on the current position if the piece, the posible movement
+    unit vectors, and the pieces range for a single. move.
+    Returns a separate x and y values for the move.
+    '''
     moves = []
-    for unit_vector in KNIGHT_UNIT_VECTORS:
-        for each in range(KNIGHT_RANGE):
-            x_value = unit_vector[0]*move_multiplier
-            y_value = unit_vector[1]*move_multiplier
-            x_value += x_axis
-            y_value += y_axis
+
+    for unit_vector in unit_vectors:
+        move_multiplier = 1
+
+        for each in range(piece_range):
+            x_vector = unit_vector[0]*move_multiplier
+            y_vector = unit_vector[1]*move_multiplier
+            x_value = x_vector + x_axis
+            y_value = y_vector + y_axis
             moves.append([x_value, y_value])
+            move_multiplier += 1
     return moves 
 
 
-def find_rook_moves(x_axis, y_axis):
-    return ''
-
-
-def find_queen_moves(x_axis, y_axis):
-    return ''
-
-
 def convert_chess_position(position):
-    '''
-    Takes a chess position as a chess algebra string and
+    '''Takes a chess position as a chess algebra string and
     returns separate x and y values as integers.
     '''
     
@@ -45,16 +43,14 @@ def convert_chess_position(position):
 
 
 def revert_chess_position(x_axis, y_axis):
-    '''
-    Takes a chess position as separate x and y integers
+    '''Takes a chess position as separate x and y integers
     and returns a string in chess algebra notation.
     '''
     return ''.join([REVERSE_X_MAPPING.get(x_axis,'x'), str(y_axis)])
 
 
 def convert_and_validate_moves(moves):
-    '''
-    Takes a collection of chess moves as collections of
+    '''Takes a collection of chess moves as collections of
     separate x and y intgers and returns a comma
     separated string of moves. Also validates that the
     move is within the bounds of the board.
@@ -64,22 +60,27 @@ def convert_and_validate_moves(moves):
         x_value = move[0]
         y_value = move[1]
 
+        position = revert_chess_position(x_value, y_value)
         #make sure move is on the board
-        if x_value != 'x' and y_value > 0 and y_value < 9:
-            tmp.append(revert_chess_position(x_value, y_value))
-            
-    #import pdb; pdb.set_trace()
+        if position[0] != 'x' and int(position[1]) > 0 and int(position[1]) < 9:
+            tmp.append(position)
     return ', '.join(tmp)
 
 def get_potential_moves(piece, position):
+    '''Calculates the potential moves for the "knight", "rook" and "queen"
+    based on the pieces current position.
+    '''
     x_axis, y_axis = convert_chess_position(position)
     
     if piece.lower() == 'knight':
-        moves = find_knight_moves(x_axis, y_axis)
+        moves = calculate_moves(x_axis, y_axis, KNIGHT_UNIT_VECTORS,
+                                KNIGHT_RANGE)
     elif piece.lower() == 'rook':
-        moves = find_rook_moves(x_axis, y_axis)
+        moves = calculate_moves(x_axis, y_axis, ROOK_UNIT_VECTORS,
+                                ROOK_RANGE)
     elif piece.lower() == 'queen':
-        moves = find_queen_moves(x_axis, y_axis)
+        moves = calculate_moves(x_axis, y_axis, QUEEN_UNIT_VECTORS,
+                                QUEEN_RANGE)
     else:
         return ''
 
