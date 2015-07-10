@@ -7,7 +7,7 @@ KNIGHT_RANGE = 1
 QUEEN_UNIT_VECTORS = (
     (1,0,),(1,1,),(0,1),(-1,1,),(-1,0,),(-1,-1,),(0,-1,),(-1,1,),)
 QUEEN_RANGE = 8
-ROOK_UNIT_VECTORS = ((1,0,),(1,1,),(-1,0,),(-1,-1,),)
+ROOK_UNIT_VECTORS = ((1,0,),(0,1,),(-1,0,),(0,-1,),)
 ROOK_RANGE = 8
 
 
@@ -62,7 +62,7 @@ def convert_and_validate_moves(moves):
 
         position = revert_chess_position(x_value, y_value)
         #make sure move is on the board
-        if position[0] != 'x' and int(position[1]) > 0 and int(position[1]) < 9:
+        if position[0] != 'x' and int(position[1:]) > 0 and int(position[1:]) < 9:
             tmp.append(position)
     return ', '.join(tmp)
 
