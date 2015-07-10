@@ -19,3 +19,17 @@ Example:
  
 If the code is passed:  “knight, d2”
 The response should be:  “b1, f1, b3, f3,c4, e4"
+
+#USAGE:
+
+To use this code either run
+
+   $ nosetests
+
+from the repository root, or start a python shell in the root
+of the repository.
+
+     >>> from chess import get_potential_moves
+     >>> get_potential_moves('rook', 'a3')
+     'b3, c3, d3, e3, f3, g3, h3, a4, a5, a6, a7, a8, a2, a1'
+     >>> 
