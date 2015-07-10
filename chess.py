@@ -1,14 +1,49 @@
-X_MAPPING = {'a':1, 'b':2, 'c':3, 'd':4, 'e':5, 'f':6, 'g':7, 'h':8}
-REVERSE_X_MAPPING = {1:'a', 2:'b', 3:'c', 4:'d', 5:'e', 6:'f', 7:'g', 8:'h'}
+import ConfigParser, os
 
-KNIGHT_UNIT_VECTORS = (
-    (2,1,),(1,2,),(-1,2,),(-2,1,),(-2,-1,),(-1,-2,),(1,-2,),(2,-1,),)
-KNIGHT_RANGE = 1
-QUEEN_UNIT_VECTORS = (
-    (1,0,),(1,1,),(0,1),(-1,1,),(-1,0,),(-1,-1,),(0,-1,),(1,-1,),)
-QUEEN_RANGE = 8
-ROOK_UNIT_VECTORS = ((1,0,),(0,1,),(-1,0,),(0,-1,),)
-ROOK_RANGE = 8
+config = ConfigParser.ConfigParser()
+config.readfp(open('chess.cfg'))
+
+ITEM_DELIMITER = config.get('general', 'item_delimiter')
+MAPPING_DELIMITER = config.get('general', 'mapping_delimiter')
+VECTOR_DELIMITER = config.get('general', 'vector_delimiter')
+
+PIECES = [each.strip() for each in config.get('general', 'pieces').split(',')]
+
+def _parse_mappings(string):
+    '''Converts mappings from cfg to python dict.'''
+    items = string.split(ITEM_DELIMITER)
+    mapping_dict = dict()
+
+    for item in items:
+        key, value = item.split(MAPPING_DELIMITER)
+        try:
+            mapping_dict[key.strip()] = int(value)
+        except ValueError:
+            mapping_dict[int(key)] = value.strip()
+    return mapping_dict
+
+def _parse_vectors(string):
+    '''Converst vector from cfg to python tuple.'''
+    items = string.split(ITEM_DELIMITER)
+    tuple_list = list()
+
+    for item in items:
+        try:
+            x_value, y_value = item.split(VECTOR_DELIMITER)
+        except Exception, e:
+            import pdb; pdb.set_trace()
+        tuple_list.append(tuple([int(x_value), int(y_value)]))
+    return tuple(tuple_list)
+        
+X_MAPPING = _parse_mappings(config.get('x_mapping', 'forward'))
+REVERSE_X_MAPPING = _parse_mappings(config.get('x_mapping', 'reverse'))
+
+KNIGHT_UNIT_VECTORS = _parse_vectors(config.get('knight', 'unit_vectors'))
+KNIGHT_RANGE = int(config.get('knight', 'range'))
+ROOK_UNIT_VECTORS = _parse_vectors(config.get('rook', 'unit_vectors'))
+ROOK_RANGE = int(config.get('rook', 'range'))
+QUEEN_UNIT_VECTORS = _parse_vectors(config.get('queen', 'unit_vectors'))
+QUEEN_RANGE = int(config.get('queen', 'range'))
 
 
 def calculate_moves(x_axis, y_axis, unit_vectors, piece_range):
@@ -67,20 +102,16 @@ def convert_and_validate_moves(moves):
     return ', '.join(tmp)
 
 def get_potential_moves(piece, position):
-    '''Calculates the potential moves for the "knight", "rook" and "queen"
+    '''Calculates the potential moves for the defined pieces
     based on the pieces current position.
     '''
     x_axis, y_axis = convert_chess_position(position)
-    
-    if piece.lower() == 'knight':
-        moves = calculate_moves(x_axis, y_axis, KNIGHT_UNIT_VECTORS,
-                                KNIGHT_RANGE)
-    elif piece.lower() == 'rook':
-        moves = calculate_moves(x_axis, y_axis, ROOK_UNIT_VECTORS,
-                                ROOK_RANGE)
-    elif piece.lower() == 'queen':
-        moves = calculate_moves(x_axis, y_axis, QUEEN_UNIT_VECTORS,
-                                QUEEN_RANGE)
+
+    if piece in PIECES:
+        UNIT_VECTORS = eval("%s_UNIT_VECTORS" % piece.upper())
+        RANGE = eval("%s_RANGE" % piece.upper())
+        moves = calculate_moves(x_axis, y_axis, UNIT_VECTORS,
+                                RANGE)
     else:
         return ''
 
